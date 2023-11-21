@@ -1,0 +1,16 @@
+#! /bin/bash
+
+# This script extracts pdf content to prepare conversion to accounting csv
+# to be imported in odoo ERP for automated reconcilation
+
+# tmp pdf file is needed for random access in (x)pdftotest
+tmppdf=$(mktemp /tmp/b-acc-tmp-pdf.XXXXXX)
+
+# Ensure pdf is unlocked with making a tmp copy
+gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=$tmppdf $1
+
+# Convert to text file and send to pipe
+xpdftotext -table $tmppdf -
+
+# clean up tmp pdf on closing
+trap "rm $tmppdf" 0
